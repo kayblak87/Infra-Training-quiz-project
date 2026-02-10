@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Infra Quiz</title>
+    <style>
+        :root { --primary: #0f172a; --secondary: #3b82f6; --bg: #f1f5f9; --card: #fff; }
+        body { font-family: sans-serif; background: var(--bg); margin: 0; display: flex; justify-content: center; padding: 20px; }
+        .container { width: 100%; max-width: 800px; background: var(--card); padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .hidden { display: none !important; }
+        
+        /* Inputs & Buttons */
+        input, select { width: 100%; padding: 10px; margin: 10px 0 20px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { background: var(--secondary); color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 1rem; }
+        button:hover { opacity: 0.9; }
+        button.secondary { background: #64748b; margin-top: 10px; }
+
+        /* Quiz UI */
+        .option { padding: 10px; border: 1px solid #e2e8f0; margin-bottom: 5px; border-radius: 4px; cursor: pointer; }
+        .option:hover { background: #eff6ff; }
+        .option.selected { background: #eff6ff; border-color: var(--secondary); font-weight: bold; }
+
+        /* Results & Table */
+        .score-circle { width: 100px; height: 100px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 2rem; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        
+        .admin-badge { background: #ef4444; color: white; font-size: 0.8rem; padding: 2px 6px; border-radius: 4px; vertical-align: middle; margin-left: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- View 1: User Registration -->
+        <section id="loginView">
+            <h2>Welcome to the Assessment</h2>
+            <p>Please enter your details to begin.</p>
+            <input type="text" id="userName" placeholder="Full Name" required>
+            <input type="text" id="userRole" placeholder="Role/Department (Optional)">
+            <button onclick="startQuiz()">Start Quiz</button>
+        </section>
+
+        <!-- View 2: Quiz -->
+        <section id="quizView" class="hidden">
+            <div style="display:flex; justify-content:space-between;">
+                <span id="userNameDisplay">User</span>
+                <span id="timer">10:00</span>
+            </div>
+            <hr>
+            <h3 id="questionText" style="margin-top:20px;">Question Text</h3>
+            <div id="optionsContainer"></div>
+            <button id="nextBtn" onclick="nextQuestion()" style="margin-top:20px;">Next</button>
+        </section>
+
+        <!-- View 3: User Result -->
+        <section id="resultView" class="hidden" style="text-align: center;">
+            <h2>Assessment Complete</h2>
+            <div class="score-circle" id="scoreDisplay">0/0</div>
+            <p id="feedbackText">Good job!</p>
+            <p>Saving your results...</p>
+            <button onclick="location.reload()" class="secondary">Take Again</button>
+        </section>
+
+        <!-- View 4: Admin Dashboard (Collated Results) -->
+        <section id="adminView" class="hidden">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h2>Admin Report Dashboard</h2>
+                <button onclick="logoutAdmin()" class="secondary">Logout</button>
+            </div>
+            <p>Collated results from all participants.</p>
+            <button onclick="fetchResults()">Refresh Data</button>
+            <br><br>
+            <div style="overflow-x:auto;">
+                <table id="resultsTable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Role</th>
+                            <th>Score</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data injected here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // --- Quiz Data ---
+        const questions = [
+            { q: "What is the default port for HTTPS?", o: ["80", "22", "443", "21"], a: 2 },
+            { q: "Which device connects different networks together?", o: ["Switch", "Hub", "Router", "Repeater"], a: 2 },
+            { q: "What does RAID stand for?", o: ["Random Array of Independent Disks", "Redundant Array of Independent Disks", "Run Access Internet Drive", "Real Access Internal Disk"], a: 1 },
+            { q: "Which is an Infrastructure as Code tool?", o: ["Docker", "Ansible", "Photoshop", "Slack"], a: 1 },
+            { q: "What is the function of a Firewall?", o: ["Cool the server", "Block unauthorized network traffic", "Store passwords", "Speed up wifi"], a: 1 }
+        ];
+
+        // --- State ---
+        let currentUser = { name: "", role: "" };
+        let currentQIndex = 0;
+        let score = 0;
+        let timeLeft = 300; // 5 mins
+
+        // --- Navigation ---
+        function startQuiz() {
+            const name = document.getElementById('userName').value;
+            const role = document.getElementById('userRole').value;
+            if (!name) return alert("Please enter your name");
+
+            currentUser = { name, role };
+            document.getElementById('loginView').classList.add('hidden');
+            document.getElementById('quizView').classList.remove('hidden');
+            document.getElementById('userNameDisplay').innerText = name;
+            
+            renderQuestion();
+            startTimer();
+        }
+
+        function showAdminLogin() {
+            const pass = prompt("Enter Admin Password (hint: admin)");
+            if(pass === "admin") {
+                document.getElementById('loginView').classList.add('hidden');
+                document.getElementById('adminView').classList.remove('hidden');
+                fetchResults();
+            }
+        }
+
+        function logoutAdmin() {
+            location.reload();
+        }
+
+        // --- Quiz Logic ---
+        function renderQuestion() {
+            const q = questions[currentQIndex];
+            document.getElementById('questionText').innerText = `${currentQIndex + 1}. ${q.q}`;
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+            
+            q.o.forEach((opt, idx) => {
+                const div = document.createElement('div');
+                div.className = 'option';
+                div.innerText = opt;
+                div.onclick = () => selectOption(div, idx);
+                container.appendChild(div);
+            });
+        }
+
+        function selectOption(el, idx) {
+            document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+            el.classList.add('selected');
+            el.dataset.index = idx; // Store selection temporarily
+        }
+
+        function nextQuestion() {
+            const selected = document.querySelector('.option.selected');
+            if(!selected) return alert("Please select an answer");
+            
+            // Check answer
+            if(parseInt(selected.dataset.index) === questions[currentQIndex].a) score++;
+
+            currentQIndex++;
+            if(currentQIndex < questions.length) {
+                renderQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function startTimer() {
+            const interval = setInterval(() => {
+                timeLeft--;
+                const m = Math.floor(timeLeft / 60);
+                const s = timeLeft % 60;
+                document.getElementById('timer').innerText = `${m}:${s < 10 ? '0'+s : s}`;
+                if(timeLeft <= 0) {
+                    clearInterval(interval);
+                    finishQuiz();
+                }
+            }, 1000);
+        }
+
+        // --- Submission & Result ---
+        async function finishQuiz() {
+            clearInterval(timerInterval); // Stop timer
+            document.getElementById('quizView').classList.add('hidden');
+            document.getElementById('resultView').classList.remove('hidden');
+            document.getElementById('scoreDisplay').innerText = `${score}/${questions.length}`;
+
+            // Payload to Backend
+            const resultData = {
+                name: currentUser.name,
+                role: currentUser.role,
+                score: score,
+                total: questions.length,
+                date: new Date().toISOString()
+            };
+
+            try {
+                // Send to Vercel API
+                const response = await fetch('/api/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(resultData)
+                });
+                
+                if(response.ok) {
+                    document.getElementById('feedbackText').innerText = "Result saved to server successfully.";
+                } else {
+                    document.getElementById('feedbackText').innerText = "Quiz complete, but server save failed.";
+                }
+            } catch (e) {
+                console.error(e);
+                document.getElementById('feedbackText').innerText = "Network error. Result not saved.";
+            }
+        }
+
+        // --- Admin Logic ---
+        async function fetchResults() {
+            const tbody = document.querySelector('#resultsTable tbody');
+            tbody.innerHTML = '<tr><td colspan="4">Loading...</td></tr>';
+
+            try {
+                const res = await fetch('/api/results');
+                const data = await res.json();
+                
+                tbody.innerHTML = '';
+                if(data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4">No results found.</td></tr>';
+                    return;
+                }
+
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${row.name}</td>
+                        <td>${row.role || '-'}</td>
+                        <td>${row.score}/${row.total}</td>
+                        <td>${new Date(row.date).toLocaleDateString()}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch(e) {
+                tbody.innerHTML = '<tr><td colspan="4">Error loading data.</td></tr>';
+            }
+        }
+    </script>
+</body>
+</html>
