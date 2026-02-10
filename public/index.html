@@ -92,13 +92,270 @@
 
     <script>
         // --- Quiz Data ---
-        const questions = [
-            { q: "What is the default port for HTTPS?", o: ["80", "22", "443", "21"], a: 2 },
-            { q: "Which device connects different networks together?", o: ["Switch", "Hub", "Router", "Repeater"], a: 2 },
-            { q: "What does RAID stand for?", o: ["Random Array of Independent Disks", "Redundant Array of Independent Disks", "Run Access Internet Drive", "Real Access Internal Disk"], a: 1 },
-            { q: "Which is an Infrastructure as Code tool?", o: ["Docker", "Ansible", "Photoshop", "Slack"], a: 1 },
-            { q: "What is the function of a Firewall?", o: ["Cool the server", "Block unauthorized network traffic", "Store passwords", "Speed up wifi"], a: 1 }
-        ];
+        ```javascript
+const infrastructureQuestions = [
+    {
+        q: "Which type of hypervisor runs directly on the host's hardware without a host operating system?",
+        o: ["Type 2", "Type 3", "Type 4", "Type 1"],
+        a: 3
+    },
+    {
+        q: "What is the primary function of a Virtual Switch in a virtualized environment?",
+        o: ["To allocate CPU resources", "To store virtual machine files", "To manage physical hardware drivers", "To connect virtual machines to each other and external networks"],
+        a: 3
+    },
+    {
+        q: "In the context of virtual machines, what does a 'snapshot' represent?",
+        o: ["A backup of the physical host", "A copy of the VM's BIOS settings", "A point-in-time state of the virtual machine", "An antivirus scan result"],
+        a: 2
+    },
+    {
+        q: "Which of the following best describes 'overcommitment' in virtualization?",
+        o: ["Committing a VM to a specific storage array only", "Installing too many applications on one VM", "Allocating more resources (like CPU/RAM) to VMs than physically exist on the host", "Exceeding the license limit of the hypervisor"],
+        a: 2
+    },
+    {
+        q: "What is the main difference between a Type 1 and a Type 2 hypervisor?",
+        o: ["Type 1 supports only Linux; Type 2 supports only Windows", "Type 1 runs on bare metal; Type 2 runs on top of a host OS", "Type 2 runs on bare metal; Type 1 runs on top of a host OS", "Type 1 is free; Type 2 always costs money"],
+        a: 1
+    },
+    {
+        q: "Which file format is commonly used for virtual machine disks in VMware environments?",
+        o: [".iso", ".vhd", ".ovf", ".vmdk"],
+        a: 3
+    },
+    {
+        q: "What is a requirement for 'Live Migration' (vMotion) of a virtual machine?",
+        o: ["Shared storage between the source and destination host", "Identical MAC addresses on all hosts", "Physical installation of the VM on the destination", "The VM must be powered off"],
+        a: 0
+    },
+    {
+        q: "Which backup type copies only the files that have changed since the last full backup?",
+        o: ["Full", "Incremental", "Differential", "Mirror"],
+        a: 2
+    },
+    {
+        q: "What is the primary disadvantage of using Incremental backups?",
+        o: ["Highest storage usage", "Cannot be scheduled automatically", "Longest restore time (requires full and all incrementals)", "Does not track file changes"],
+        a: 2
+    },
+    {
+        q: "Which backup strategy involves keeping three copies of data, on two different media types, with one copy offsite?",
+        o: ["Full + Incremental", "Tape Rotation", "Grandfather-Father-Son", "3-2-1 Rule"],
+        a: 3
+    },
+    {
+        q: "What does RPO (Recovery Point Objective) measure?",
+        o: ["The time required to restore systems after a failure", "The maximum acceptable amount of data loss measured in time", "The frequency of full backups", "The physical location of the backup server"],
+        a: 1
+    },
+    {
+        q: "What does RTO (Recovery Time Objective) measure?",
+        o: ["The target time to restore a business process after a disaster", "The age of the backup file", "The time required to install backup software", "The speed of the internet connection for backup"],
+        a: 0
+    },
+    {
+        q: "Which backup method creates a complete image of the entire system, including the operating system and applications?",
+        o: ["Differential backup", "File-level backup", "Snapshot only", "Image-based backup"],
+        a: 3
+    },
+    {
+        q: "Why is RAID not considered a backup solution?",
+        o: ["RAID is too slow for backup operations", "RAID does not support virtual machines", "RAID protects against drive failure but not data corruption or accidental deletion", "RAID requires SSDs which are expensive"],
+        a: 2
+    },
+    {
+        q: "What is the default port for Remote Desktop Protocol (RDP) in Windows Server?",
+        o: ["22", "80", "443", "3389"],
+        a: 3
+    },
+    {
+        q: "Which Windows tool is used to manage disk partitions, volumes, and drive letters?",
+        o: ["Device Manager", "Event Viewer", "Task Manager", "Disk Management"],
+        a: 3
+    },
+    {
+        q: "What is the purpose of Windows Server Update Services (WSUS)?",
+        o: ["To manage user passwords", "To monitor network traffic", "To backup the Active Directory database", "To manage the distribution of updates to Microsoft products"],
+        a: 3
+    },
+    {
+        q: "Which built-in Windows command-line tool is used to display the TCP/IP network configuration values?",
+        o: ["netstat", "ping", "tracert", "ipconfig"],
+        a: 3
+    },
+    {
+        q: "In Windows Server, what is the function of the 'Server Manager' console?",
+        o: ["It is a management console for configuring and managing Windows server roles", "It is used exclusively for email management", "It is a hardware diagnostic tool", "It is a replacement for Command Prompt"],
+        a: 0
+    },
+    {
+        q: "Which edition of Windows Server is designed for high-density virtualization with no licensing limits on virtual machines?",
+        o: ["Standard", "Datacenter", "Essentials", "Foundation"],
+        a: 1
+    },
+    {
+        q: "What is the correct syntax to install the DNS Server role using PowerShell?",
+        o: ["Enable-ServerDNS", "Import-Module DNS", "Add-Role -Role DNS", "Install-WindowsFeature -Name DNS"],
+        a: 3
+    },
+    {
+        q: "Which Windows feature allows a server to host multiple virtual machines?",
+        o: ["Containers", "VirtualBox", "VMware Workstation", "Hyper-V"],
+        a: 3
+    },
+    {
+        q: "In Linux, which command is used to change file permissions?",
+        o: ["chown", "mv", "cp", "chmod"],
+        a: 3
+    },
+    {
+        q: "What is the root directory in a Linux file system?",
+        o: ["C:", "home", "bin", "/"],
+        a: 3
+    },
+    {
+        q: "Which Linux command is used to display the current working directory?",
+        o: ["cd", "ls", "mkdir", "pwd"],
+        a: 3
+    },
+    {
+        q: "In Linux, where are most system log files stored?",
+        o: ["/tmp", "/usr/bin", "/etc/logs", "/var/log"],
+        a: 3
+    },
+    {
+        q: "Which command is used to install packages on a Debian-based Linux system (like Ubuntu)?",
+        o: ["yum", "rpm", "pacman", "apt-get"],
+        a: 3
+    },
+    {
+        q: "What does the 'ls' command do in Linux?",
+        o: ["Lists directory contents", "Changes current directory", "Copies files", "Edits text files"],
+        a: 0
+    },
+    {
+        q: "In Linux permissions, what does the permission '755' mean?",
+        o: ["Owner: r-x; Group: r-x; Others: r-x", "Owner: rw-; Group: r-- ; Others: r--", "Owner: rwx; Group: rwx; Others: rwx", "Owner: rwx; Group: r-x; Others: r-x"],
+        a: 3
+    },
+    {
+        q: "Which Linux daemon manages scheduled tasks (cron jobs)?",
+        o: ["sshd", "systemd", "httpd", "crond"],
+        a: 3
+    },
+    {
+        q: "What is the primary function of Active Directory?",
+        o: ["Directory and identity management services", "Managing physical hardware assets", "Managing internet connectivity", "Running virtual machines"],
+        a: 0
+    },
+    {
+        q: "Which tool is used to manage Active Directory users and computers?",
+        o: ["Active Directory Domains and Trusts", "DNS Manager", "Active Directory Users and Computers (ADUC)", "Active Directory Sites and Services"],
+        a: 2
+    },
+    {
+        q: "What is the hierarchical container within an Active Directory domain used to organize objects called?",
+        o: ["Group Policy Object (GPO)", "Domain Tree", "Organizational Unit (OU)", "Forest"],
+        a: 2
+    },
+    {
+        q: "Which protocol does Active Directory use for authentication by default?",
+        o: ["Kerberos", "LDAP", "NTLM", "FTP"],
+        a: 0
+    },
+    {
+        q: "What is the specific term for the first domain controller installed in an Active Directory forest?",
+        o: ["Master Browser", "Global Catalog Server", "Primary Domain Controller", "Forest Root Domain Controller"],
+        a: 3
+    },
+    {
+        q: "Which Group Policy setting determines the order in which policies are applied?",
+        o: ["LSDOU (Local, Site, Domain, OU)", "OUSLD (OU, Site, Local, Domain)", "SOLD (Site, OU, Local, Domain)", "DLOS (Domain, Local, OU, Site)"],
+        a: 0
+    },
+    {
+        q: "What is a 'Forest' in Active Directory?",
+        o: ["A physical server cluster", "A single domain database", "A backup of the AD database", "A collection of one or more domain trees"],
+        a: 3
+    },
+    {
+        q: "Which FSMO role is responsible for synchronizing time across the domain?",
+        o: ["Schema Master", "RID Master", "Infrastructure Master", "PDC Emulator"],
+        a: 3
+    },
+    {
+        q: "What does DHCP stand for?",
+        o: ["Domain Host Control Protocol", "Domain Host Configuration Program", "Dynamic Hardware Control Program", "Dynamic Host Configuration Protocol"],
+        a: 3
+    },
+    {
+        q: "Which port is used by a DHCP client to communicate with a DHCP server?",
+        o: ["80 (TCP)", "67 (UDP)", "68 (UDP)", "53 (UDP)"],
+        a: 2
+    },
+    {
+        q: "What is the DHCP process sequence where a client accepts an IP address offer?",
+        o: ["Discover", "Offer", "Request", "Acknowledge"],
+        a: 2
+    },
+    {
+        q: "Which of the following is a valid IP address automatically assigned if a DHCP server cannot be reached (APIPA)?",
+        o: ["169.254.x.x", "192.168.x.x", "172.16.x.x", "10.0.x.x"],
+        a: 0
+    },
+    {
+        q: "What is a DHCP Reservation?",
+        o: ["The time duration an IP is leased", "A backup of the DHCP database", "Mapping a specific IP address to a specific MAC address", "Excluding a range of IPs from a scope"],
+        a: 2
+    },
+    {
+        q: "Which DHCP option is commonly used to inform clients of the IP address of their default gateway?",
+        o: ["Option 006", "Option 015", "Option 044", "Option 003"],
+        a: 3
+    },
+    {
+        q: "A user reports they cannot connect to the network. Their IP address is 169.254.1.5. What does this indicate?",
+        o: ["The user has a static IP configured correctly", "The network cable is unplugged at the switch only", "The DNS server is down", "The DHCP server is down or unreachable"],
+        a: 3
+    },
+    {
+        q: "Which command is used to verify network connectivity to a specific IP address?",
+        o: ["nslookup", "ipconfig", "netstat", "ping"],
+        a: 3
+    },
+    {
+        q: "You suspect a DNS resolution issue. Which command would you use to flush the local DNS cache?",
+        o: ["nslookup /flush", "ipconfig /renew", "net stop dns", "ipconfig /flushdns"],
+        a: 3
+    },
+    {
+        q: "A server is running extremely slowly. Which tool would you use first to identify if a process is consuming excessive resources?",
+        o: ["Task Manager (Windows) or top (Linux)", "Disk Defragmenter", "Event Viewer", "Ping"],
+        a: 0
+    },
+    {
+        q: "What is the loopback IP address used to test the local TCP/IP stack?",
+        o: ["0.0.0.0", "255.255.255.255", "192.168.1.1", "127.0.0.1"],
+        a: 3
+    },
+    {
+        q: "Which tool traces the path a packet takes to reach a destination?",
+        o: ["ping", "pathping", "tracert (Windows) / traceroute (Linux)", "nslookup"],
+        a: 2
+    },
+    {
+        q: "A Windows Server is booting into a Blue Screen of Death (BSOD). Which mode should you boot into to attempt a repair with minimal drivers?",
+        o: ["Normal Mode", "Debugging Mode", "Recovery Console only", "Safe Mode"],
+        a: 3
+    },
+    {
+        q: "Users complain a critical service is not running. What is often the first step in troubleshooting a service?",
+        o: ["Check if the service is set to 'Automatic' and is 'Started' in services.msc", "Restart the server immediately", "Reinstall the operating system", "Delete the service registry key"],
+        a: 0
+    }
+];
+
 
         // --- State ---
         let currentUser = { name: "", role: "" };
