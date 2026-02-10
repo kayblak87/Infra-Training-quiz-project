@@ -361,7 +361,7 @@ const infrastructureQuestions = [
         let currentUser = { name: "", role: "" };
         let currentQIndex = 0;
         let score = 0;
-        let timeLeft = 300; // 5 mins
+        let timeLeft = 1800; // 30 mins
 
         // --- Navigation ---
         function startQuiz() {
@@ -429,17 +429,40 @@ const infrastructureQuestions = [
         }
 
         function startTimer() {
-            const interval = setInterval(() => {
-                timeLeft--;
-                const m = Math.floor(timeLeft / 60);
-                const s = timeLeft % 60;
-                document.getElementById('timer').innerText = `${m}:${s < 10 ? '0'+s : s}`;
-                if(timeLeft <= 0) {
-                    clearInterval(interval);
-                    finishQuiz();
-                }
-            }, 1000);
+    // Get the timer element to style it later
+    const timerEl = document.getElementById('timer'); 
+
+    const interval = setInterval(() => {
+        timeLeft--;
+        
+        // Calculate minutes and seconds
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        
+        // Update display
+        timerEl.innerText = `${m}:${s < 10 ? '0'+s : s}`;
+
+        // --- WARNING SETTINGS ---
+        // Turn Orange when 60 seconds (1 min) left
+        if (timeLeft === 60) {
+            timerEl.style.color = "orange";
+            timerEl.style.fontWeight = "bold";
         }
+
+        // Turn Red and Alert when 10 seconds left
+        if (timeLeft === 10) {
+            timerEl.style.color = "red";
+            // Optional: Show an alert popup
+            // alert("Warning: You have 10 seconds left!");
+        }
+
+        // --- AUTO SUBMISSION SETTING ---
+        if (timeLeft <= 0) {
+            clearInterval(interval); // Stop the timer
+            finishQuiz(); // Automatically submit and show results
+        }
+    }, 1000);
+}
 
         // --- Submission & Result ---
         async function finishQuiz() {
